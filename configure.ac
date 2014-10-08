@@ -108,6 +108,11 @@ AC_ARG_ENABLE(tegra-experimental-api,
 	      [Enable support for Tegra's experimental API (default: disabled)]),
 	      [TEGRA=$enableval], [TEGRA=no])
 
+AC_ARG_ENABLE(rockchip-experimental-api,
+	      AS_HELP_STRING([--enable-rockchip-experimental-api],
+	      [Enable support for rockchip's experimental API (default: disabled)]),
+	      [ROCKCHIP=$enableval], [ROCKCHIP=no])
+
 AC_ARG_ENABLE(install-test-programs,
 		  AS_HELP_STRING([--enable-install-test-programs],
 		  [Install test programs (default: no)]),
@@ -324,6 +329,11 @@ if test "x$TEGRA" = xyes; then
 	AC_DEFINE(HAVE_TEGRA, 1, [Have Tegra support])
 fi
 
+AM_CONDITIONAL(HAVE_ROCKCHIP, [test "x$ROCKCHIP" = xyes])
+if test "x$ROCKCHIP" = xyes; then
+	AC_DEFINE(HAVE_ROCKCHIP, 1, [Have ROCKCHIP support])
+fi
+
 AM_CONDITIONAL(HAVE_INSTALL_TESTS, [test "x$INSTALL_TESTS" = xyes])
 if test "x$INSTALL_TESTS" = xyes; then
 	AC_DEFINE(HAVE_INSTALL_TESTS, 1, [Install test programs])
@@ -425,6 +435,8 @@ AC_CONFIG_FILES([
 	freedreno/libdrm_freedreno.pc
 	tegra/Makefile
 	tegra/libdrm_tegra.pc
+	rockchip/Makefile
+	rockchip/libdrm_rockchip.pc
 	tests/Makefile
 	tests/modeprint/Makefile
 	tests/modetest/Makefile
@@ -450,4 +462,5 @@ echo "  OMAP API       $OMAP"
 echo "  EXYNOS API     $EXYNOS"
 echo "  Freedreno API  $FREEDRENO (kgsl: $FREEDRENO_KGSL)"
 echo "  Tegra API      $TEGRA"
+echo "  Rockchip API   $ROCKCHIP"
 echo ""
