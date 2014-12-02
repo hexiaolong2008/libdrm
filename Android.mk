@@ -58,7 +58,8 @@ SUBDIRS := \
 	radeon \
 	tegra \
 	libkms \
-	tests/modetest
+	tests/modetest \
+	tests/planetest
 
 mkfiles := $(patsubst %,$(LIBDRM_TOP)/%/Android.mk,$(SUBDIRS))
 include $(mkfiles)
