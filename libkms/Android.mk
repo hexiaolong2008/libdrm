@@ -4,12 +4,14 @@ intel_drivers := i915 i965 i915g ilo
 radeon_drivers := r300g r600g radeonsi
 nouveau_drivers := nouveau
 vmwgfx_drivers := vmwgfx
+tegra_drivers := tegra
 
 valid_drivers := \
 	$(intel_drivers) \
 	$(radeon_drivers) \
 	$(nouveau_drivers) \
-	$(vmwgfx_drivers)
+	$(vmwgfx_drivers) \
+	$(tegra_drivers)
 
 # warn about invalid drivers
 invalid_drivers := $(filter-out $(valid_drivers), $(DRM_GPU_DRIVERS))

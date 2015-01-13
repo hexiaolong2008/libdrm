@@ -54,6 +54,7 @@ include $(BUILD_SHARED_LIBRARY)
 SUBDIRS := \
 	nouveau \
 	radeon \
+	tegra \
 	libkms \
 	tests/modetest
 
