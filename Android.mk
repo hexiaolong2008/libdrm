@@ -52,8 +52,6 @@ LOCAL_COPY_HEADERS_TO := libdrm
 include $(BUILD_SHARED_LIBRARY)
 
 SUBDIRS := \
-	freedreno \
-	intel \
 	nouveau \
 	radeon \
 	libkms \
