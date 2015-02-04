@@ -44,6 +44,7 @@ struct drm_tegra_bo {
 	uint64_t offset;
 	uint32_t flags;
 	uint32_t size;
+	uint32_t name;
 	atomic_t ref;
 	void *map;
 };
