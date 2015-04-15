@@ -21,6 +21,8 @@
 # IN THE SOFTWARE.
 #
 
+ifeq ($(strip $(BOARD_USES_LIBDRM)),true)
+
 LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 
@@ -60,3 +62,5 @@ SUBDIRS := \
 
 mkfiles := $(patsubst %,$(LIBDRM_TOP)/%/Android.mk,$(SUBDIRS))
 include $(mkfiles)
+
+endif
