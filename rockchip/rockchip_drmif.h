@@ -73,5 +73,7 @@ struct rockchip_bo *rockchip_bo_from_name(struct rockchip_device *dev,
 			uint32_t name);
 int rockchip_bo_get_name(struct rockchip_bo *bo, uint32_t *name);
 uint32_t rockchip_bo_handle(struct rockchip_bo *bo);
+struct rockchip_bo *rockchip_bo_from_handle(struct rockchip_device *dev,
+			uint32_t handle, uint32_t flags, uint32_t size);
 void *rockchip_bo_map(struct rockchip_bo *bo);
 #endif /* ROCKCHIP_DRMIF_H_ */
