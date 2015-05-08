@@ -205,4 +205,8 @@ struct drm_nouveau_sarea {
 #define DRM_NOUVEAU_GEM_CPU_FINI       0x43
 #define DRM_NOUVEAU_GEM_INFO           0x44
 
+/* The ioctls below are marked as staging */
+#define DRM_NOUVEAU_GEM_SET_TILING     0x50
+#define DRM_NOUVEAU_GEM_PUSHBUF_2      0x51
+
 #endif /* __NOUVEAU_DRM_H__ */
