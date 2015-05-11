@@ -57,7 +57,7 @@ static inline void *drm_mmap(void *addr, size_t length, int prot, int flags,
       return MAP_FAILED;
    }
 
-   return mmap64(addr, length, prot, flags, fd, (size_t) (offset >> 12));
+   return mmap64(addr, length, prot, flags, fd, offset);
 }
 
 #  define drm_munmap(addr, length) \
