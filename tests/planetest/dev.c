@@ -14,7 +14,6 @@
 #include "dev.h"
 #include "modeset.h"
 
-#ifdef USE_ATOMIC_API
 static uint32_t get_prop_id(struct sp_dev *dev,
 			drmModeObjectPropertiesPtr props, const char *name)
 {
@@ -31,7 +30,6 @@ static uint32_t get_prop_id(struct sp_dev *dev,
 		printf("Could not find %s property\n", name);
 	return prop_id;
 }
-#endif
 
 static int get_supported_format(struct sp_plane *plane, uint32_t *format)
 {
@@ -69,9 +67,16 @@ struct sp_dev *create_sp_dev(void)
 	}
 
 	dev->fd = fd;
+
 	ret = drmSetClientCap(dev->fd, DRM_CLIENT_CAP_UNIVERSAL_PLANES, 1);
 	if (ret) {
 		printf("failed to set client cap\n");
+		goto err;
+	}
+
+	ret = drmSetClientCap(dev->fd, DRM_CLIENT_CAP_ATOMIC, 1);
+	if (ret) {
+		printf("Failed to set atomic cap %d", ret);
 		goto err;
 	}
 
@@ -82,18 +87,33 @@ struct sp_dev *create_sp_dev(void)
 	}
 
 	dev->num_connectors = r->count_connectors;
-	dev->connectors = calloc(dev->num_connectors, sizeof(*dev->connectors));
+	dev->connectors = calloc(dev->num_connectors,
+				sizeof(struct sp_connector));
 	if (!dev->connectors) {
 		printf("failed to allocate connectors\n");
 		goto err;
 	}
 	for (i = 0; i < dev->num_connectors; i++) {
-		dev->connectors[i] = drmModeGetConnector(dev->fd,
+		drmModeObjectPropertiesPtr props;
+		dev->connectors[i].conn = drmModeGetConnector(dev->fd,
 					r->connectors[i]);
-		if (!dev->connectors[i]) {
+		if (!dev->connectors[i].conn) {
 			printf("failed to get connector %d\n", i);
 			goto err;
 		}
+
+		props = drmModeObjectGetProperties(dev->fd, r->connectors[i],
+				DRM_MODE_OBJECT_CONNECTOR);
+		if (!props) {
+			printf("failed to get connector properties\n");
+			goto err;
+		}
+
+		dev->connectors[i].crtc_id_pid = get_prop_id(dev, props,
+								"CRTC_ID");
+		drmModeFreeObjectProperties(props);
+		if (!dev->connectors[i].crtc_id_pid)
+			goto err;
 	}
 
 	dev->num_encoders = r->count_encoders;
@@ -117,14 +137,27 @@ struct sp_dev *create_sp_dev(void)
 		goto err;
 	}
 	for (i = 0; i < dev->num_crtcs; i++) {
+		drmModeObjectPropertiesPtr props;
+
 		dev->crtcs[i].crtc = drmModeGetCrtc(dev->fd, r->crtcs[i]);
 		if (!dev->crtcs[i].crtc) {
 			printf("failed to get crtc %d\n", i);
 			goto err;
 		}
-		dev->crtcs[i].scanout = NULL;
 		dev->crtcs[i].pipe = i;
 		dev->crtcs[i].num_planes = 0;
+
+		props = drmModeObjectGetProperties(dev->fd, r->crtcs[i],
+				DRM_MODE_OBJECT_CRTC);
+		if (!props) {
+			printf("failed to get crtc properties\n");
+			goto err;
+		}
+
+		dev->crtcs[i].mode_pid = get_prop_id(dev, props, "MODE_ID");
+		drmModeFreeObjectProperties(props);
+		if (!dev->crtcs[i].mode_pid)
+			goto err;
 	}
 
 	pr = drmModeGetPlaneResources(dev->fd);
@@ -164,7 +197,6 @@ struct sp_dev *create_sp_dev(void)
 			printf("failed to get plane properties\n");
 			goto err;
 		}
-#ifdef USE_ATOMIC_API
 		plane->crtc_pid = get_prop_id(dev, props, "CRTC_ID");
 		if (!plane->crtc_pid) {
 			drmModeFreeObjectProperties(props);
@@ -215,7 +247,6 @@ struct sp_dev *create_sp_dev(void)
 			drmModeFreeObjectProperties(props);
 			goto err;
 		}
-#endif
 		drmModeFreeObjectProperties(props);
 	}
 
@@ -253,8 +284,6 @@ void destroy_sp_dev(struct sp_dev *dev)
 		for (i = 0; i< dev->num_crtcs; i++) {
 			if (dev->crtcs[i].crtc)
 				drmModeFreeCrtc(dev->crtcs[i].crtc);
-			if (dev->crtcs[i].scanout)
-				free_sp_bo(dev->crtcs[i].scanout);
 		}
 		free(dev->crtcs);
 	}
@@ -267,8 +296,8 @@ void destroy_sp_dev(struct sp_dev *dev)
 	}
 	if (dev->connectors) {
 		for (i = 0; i< dev->num_connectors; i++) {
-			if (dev->connectors[i])
-				drmModeFreeConnector(dev->connectors[i]);
+			if (dev->connectors[i].conn)
+				drmModeFreeConnector(dev->connectors[i].conn);
 		}
 		free(dev->connectors);
 	}

@@ -10,28 +10,76 @@
 #include "bo.h"
 #include "dev.h"
 
+static int set_crtc_mode(struct sp_dev *dev, struct sp_crtc *crtc,
+			struct sp_connector *conn, drmModeModeInfoPtr mode)
+{
+	int ret;
+	struct drm_mode_create_blob create_blob;
+	drmModePropertySetPtr pset;
+
+	memset(&create_blob, 0, sizeof(create_blob));
+	create_blob.length = sizeof(struct drm_mode_modeinfo);
+	create_blob.data = (__u64)mode;
+
+	ret = drmIoctl(dev->fd, DRM_IOCTL_MODE_CREATEPROPBLOB, &create_blob);
+	if (ret) {
+		printf("Failed to create mode property blob %d", ret);
+		return ret;
+	}
+
+	pset = drmModePropertySetAlloc();
+	if (!pset) {
+		printf("Failed to allocate property set");
+		return -1;
+	}
+
+	ret = drmModePropertySetAdd(pset, crtc->crtc->crtc_id,
+				    crtc->mode_pid, create_blob.blob_id) ||
+		drmModePropertySetAdd(pset, conn->conn->connector_id,
+				conn->crtc_id_pid, crtc->crtc->crtc_id);
+	if (ret) {
+		printf("Failed to add blob %d to pset", create_blob.blob_id);
+		drmModePropertySetFree(pset);
+		return ret;
+	}
+
+	ret = drmModePropertySetCommit(dev->fd, DRM_MODE_ATOMIC_ALLOW_MODESET,
+					NULL, pset);
+
+	drmModePropertySetFree(pset);
+
+	if (ret) {
+		printf("Failed to commit pset ret=%d\n", ret);
+		return ret;
+	}
+
+	memcpy(&crtc->crtc->mode, mode, sizeof(struct drm_mode_modeinfo));
+	crtc->crtc->mode_valid = 1;
+	return 0;
+}
+
 int initialize_screens(struct sp_dev *dev)
 {
 	int ret, i, j;
 
 	for (i = 0; i < dev->num_connectors; i++) {
-		drmModeConnectorPtr c = dev->connectors[i];
+		struct sp_connector *c = &dev->connectors[i];
 		drmModeModeInfoPtr m = NULL;
 		drmModeEncoderPtr e = NULL;
 		struct sp_crtc *cr = NULL;
 
-		if (c->connection != DRM_MODE_CONNECTED)
+		if (c->conn->connection != DRM_MODE_CONNECTED)
 			continue;
 
-		if (!c->count_modes) {
+		if (!c->conn->count_modes) {
 			printf("connector has no modes, skipping\n");
 			continue;
 		}
 
 		/* Take the first unless there's a preferred mode */
-		m = &c->modes[0];
-		for (j = 0; j < c->count_modes; j++) {
-			drmModeModeInfoPtr tmp_m = &c->modes[j];
+		m = &c->conn->modes[0];
+		for (j = 0; j < c->conn->count_modes; j++) {
+			drmModeModeInfoPtr tmp_m = &c->conn->modes[j];
 
 			if (!(tmp_m->type & DRM_MODE_TYPE_PREFERRED))
 				continue;
@@ -40,14 +88,14 @@ int initialize_screens(struct sp_dev *dev)
 			break;
 		}
 
-		if (!c->count_encoders) {
+		if (!c->conn->count_encoders) {
 			printf("no possible encoders for connector\n");
 			continue;
 		}
 
 		for (j = 0; j < dev->num_encoders; j++) {
 			e = dev->encoders[j];
-			if (e->encoder_id == c->encoders[0])
+			if (e->encoder_id == c->conn->encoders[0])
 				break;
 		}
 		if (j == dev->num_encoders) {
@@ -65,26 +113,10 @@ int initialize_screens(struct sp_dev *dev)
 			printf("could not find crtc for the encoder\n");
 			continue;
 		}
-		if (cr->scanout) {
-			printf("crtc already in use\n");
-			continue;
-		}
 
-		/* XXX: Hardcoding the format here... :| */
-		cr->scanout = create_sp_bo(dev, m->hdisplay, m->vdisplay,
-				24, 32, DRM_FORMAT_XRGB8888, 0);
-		if (!cr->scanout) {
-			printf("failed to create new scanout bo\n");
-			continue;
-		}
-
-		fill_bo(cr->scanout, 0xFF, 0xFF, 0xFF, 0xFF);
-
-		ret = drmModeSetCrtc(dev->fd, cr->crtc->crtc_id,
-				cr->scanout->fb_id, 0, 0, &c->connector_id,
-				1, m);
+		ret = set_crtc_mode(dev, cr, c, m);
 		if (ret) {
-			printf("failed to set crtc mode ret=%d\n", ret);
+			printf("failed to set mode!\n");
 			continue;
 		}
 	}
@@ -119,11 +151,6 @@ void put_sp_plane(struct sp_plane *plane)
 	if (p)
 		plane->plane = p;
 
-	if (plane->plane->crtc_id)
-		drmModeSetPlane(plane->dev->fd, plane->plane->plane_id,
-				plane->plane->crtc_id, 0, 0,
-				0, 0, 0, 0, 0, 0, 0, 0);
-
 	if (plane->bo) {
 		free_sp_bo(plane->bo);
 		plane->bo = NULL;
@@ -155,7 +182,6 @@ int set_sp_plane(struct sp_dev *dev, struct sp_plane *plane,
 
 	return ret;
 }
-#ifdef USE_ATOMIC_API
 int set_sp_plane_pset(struct sp_dev *dev, struct sp_plane *plane,
 		drmModePropertySetPtr pset, struct sp_crtc *crtc, int x, int y)
 {
@@ -197,4 +223,3 @@ int set_sp_plane_pset(struct sp_dev *dev, struct sp_plane *plane,
 
 	return ret;
 }
-#endif

@@ -28,18 +28,23 @@ struct sp_plane {
 	uint32_t src_h_pid;
 };
 
+struct sp_connector {
+	drmModeConnectorPtr conn;
+	uint32_t crtc_id_pid;
+};
+
 struct sp_crtc {
 	drmModeCrtcPtr crtc;
 	int pipe;
 	int num_planes;
-	struct sp_bo *scanout;
+	uint32_t mode_pid;
 };
 
 struct sp_dev {
 	int fd;
 
 	int num_connectors;
-	drmModeConnectorPtr *connectors;
+	struct sp_connector *connectors;
 
 	int num_encoders;
 	drmModeEncoderPtr *encoders;
