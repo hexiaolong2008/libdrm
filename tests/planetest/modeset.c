@@ -61,6 +61,7 @@ static int set_crtc_mode(struct sp_dev *dev, struct sp_crtc *crtc,
 int initialize_screens(struct sp_dev *dev)
 {
 	int ret, i, j;
+	unsigned crtc_mask = 0;
 
 	for (i = 0; i < dev->num_connectors; i++) {
 		struct sp_connector *c = &dev->connectors[i];
@@ -104,6 +105,9 @@ int initialize_screens(struct sp_dev *dev)
 		}
 
 		for (j = 0; j < dev->num_crtcs; j++) {
+			if ((1 << j) & crtc_mask)
+				continue;
+
 			cr = &dev->crtcs[j];
 
 			if ((1 << j) & e->possible_crtcs)
@@ -119,6 +123,7 @@ int initialize_screens(struct sp_dev *dev)
 			printf("failed to set mode!\n");
 			continue;
 		}
+		crtc_mask |= 1 << j;
 	}
 	return 0;
 }
