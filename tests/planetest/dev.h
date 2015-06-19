@@ -57,7 +57,9 @@ struct sp_dev {
 	struct sp_plane *planes;
 };
 
-struct sp_dev *create_sp_dev(void);
+void parse_arguments(int argc, char *argv[], int *card, int *crtc);
+
+struct sp_dev *create_sp_dev(int card);
 void destroy_sp_dev(struct sp_dev *dev);
 
 #endif /* __DEV_H_INCLUDED__ */

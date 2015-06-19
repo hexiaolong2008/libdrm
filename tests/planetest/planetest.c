@@ -40,12 +40,20 @@ int main(int argc, char *argv[])
 	struct sp_dev *dev;
 	struct sp_plane **plane = NULL;
 	struct sp_crtc *test_crtc;
+	int card = 0, crtc = 0;
 
 	signal(SIGINT, sigint_handler);
 
-	dev = create_sp_dev();
+	parse_arguments(argc, argv, &card, &crtc);
+
+	dev = create_sp_dev(card);
 	if (!dev) {
 		printf("Failed to create sp_dev\n");
+		return -1;
+	}
+
+	if (crtc >= dev->num_crtcs) {
+		printf("Invalid crtc %d (num=%d)\n", crtc, dev->num_crtcs);
 		return -1;
 	}
 
@@ -54,7 +62,7 @@ int main(int argc, char *argv[])
 		printf("Failed to initialize screens\n");
 		goto out;
 	}
-	test_crtc = &dev->crtcs[0];
+	test_crtc = &dev->crtcs[crtc];
 
 	plane = calloc(dev->num_planes, sizeof(*plane));
 	if (!plane) {

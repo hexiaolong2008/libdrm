@@ -3,6 +3,7 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <string.h>
+#include <getopt.h>
 
 #include <drm.h>
 #include <drm_fourcc.h>
@@ -13,6 +14,60 @@
 #include "bo.h"
 #include "dev.h"
 #include "modeset.h"
+
+static void show_usage(char *name)
+{
+	printf("Usage: %s [OPTION]\n", name);
+	printf("   -c, --card      Index of dri card (ie: /dev/dri/cardN)\n");
+	printf("   -r, --crtc      Index of crtc to use for test\n");
+	printf("\n\n");
+}
+
+void parse_arguments(int argc, char *argv[], int *card, int *crtc)
+{
+	static struct option options[] = {
+		{ "card", required_argument, NULL, 'c' },
+		{ "crtc", required_argument, NULL, 'r' },
+		{ "help", no_argument, NULL, 'h' },
+	};
+	int option_index = 0;
+	int c;
+
+	*card = -1;
+	*crtc = -1;
+	do {
+		c = getopt_long(argc, argv, "c:r:h", options, &option_index);
+		switch (c) {
+		case 0:
+		case 'h':
+			show_usage(argv[0]);
+			exit(0);
+		case -1:
+			break;
+		case 'c':
+			if (optarg[0] < '0' || optarg[0] > '9') {
+				printf("Invalid card value '%s'!\n", optarg);
+				show_usage(argv[0]);
+				exit(-1);
+			}
+			*card = optarg[0] - '0';
+			break;
+		case 'r':
+			if (optarg[0] < '0' || optarg[0] > '9') {
+				printf("Invalid crtc value '%s'!\n", optarg);
+				show_usage(argv[0]);
+				exit(-1);
+			}
+			*crtc = optarg[0] - '0';
+			break;
+		}
+	} while (c != -1);
+
+	if (*card < 0 || *crtc < 0) {
+		show_usage(argv[0]);
+		exit(-1);
+	}
+}
 
 static uint32_t get_prop_id(struct sp_dev *dev,
 			drmModeObjectPropertiesPtr props, const char *name)
@@ -47,14 +102,17 @@ static int get_supported_format(struct sp_plane *plane, uint32_t *format)
 	return -ENOENT;
 }
 
-struct sp_dev *create_sp_dev(void)
+struct sp_dev *create_sp_dev(int card)
 {
 	struct sp_dev *dev;
 	int ret, fd, i, j;
 	drmModeRes *r = NULL;
 	drmModePlaneRes *pr = NULL;
+	char card_path[256];
 
-	fd = open("/dev/dri/card0", O_RDWR);
+	snprintf(card_path, sizeof(card_path), "/dev/dri/card%d", card);
+
+	fd = open(card_path, O_RDWR);
 	if (fd < 0) {
 		printf("failed to open card0\n");
 		return NULL;
