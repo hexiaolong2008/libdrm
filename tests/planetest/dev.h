@@ -38,6 +38,7 @@ struct sp_crtc {
 	int pipe;
 	int num_planes;
 	uint32_t mode_pid;
+	uint32_t active_pid;
 };
 
 struct sp_dev {

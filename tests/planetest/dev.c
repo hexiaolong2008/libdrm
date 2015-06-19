@@ -155,8 +155,9 @@ struct sp_dev *create_sp_dev(void)
 		}
 
 		dev->crtcs[i].mode_pid = get_prop_id(dev, props, "MODE_ID");
+		dev->crtcs[i].active_pid = get_prop_id(dev, props, "ACTIVE");
 		drmModeFreeObjectProperties(props);
-		if (!dev->crtcs[i].mode_pid)
+		if (!dev->crtcs[i].mode_pid || !dev->crtcs[i].active_pid)
 			goto err;
 	}
 

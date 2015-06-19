@@ -35,6 +35,8 @@ static int set_crtc_mode(struct sp_dev *dev, struct sp_crtc *crtc,
 
 	ret = drmModePropertySetAdd(pset, crtc->crtc->crtc_id,
 				    crtc->mode_pid, create_blob.blob_id) ||
+	      drmModePropertySetAdd(pset, crtc->crtc->crtc_id,
+				    crtc->active_pid, 1) ||
 		drmModePropertySetAdd(pset, conn->conn->connector_id,
 				conn->crtc_id_pid, crtc->crtc->crtc_id);
 	if (ret) {
