@@ -226,6 +226,16 @@ enum nouveau_bus_type {
 struct drm_nouveau_sarea {
 };
 
+#define NOUVEAU_GEM_CHANNEL_FIFO_ERROR_IDLE_TIMEOUT	8
+#define NOUVEAU_GEM_CHANNEL_GR_ERROR_SW_NOTIFY		13
+#define NOUVEAU_GEM_CHANNEL_FIFO_ERROR_MMU_ERR_FLT	31
+#define NOUVEAU_GEM_CHANNEL_PBDMA_ERROR			32
+struct drm_nouveau_gem_set_error_notifier {
+	uint32_t channel;
+	uint32_t buffer;
+	uint32_t offset; /* in bytes, u32-aligned */
+};
+
 #define DRM_NOUVEAU_GETPARAM           0x00
 #define DRM_NOUVEAU_SETPARAM           0x01
 #define DRM_NOUVEAU_CHANNEL_ALLOC      0x02
@@ -245,5 +255,6 @@ struct drm_nouveau_sarea {
 #define DRM_NOUVEAU_GEM_SET_INFO       0x52
 #define DRM_NOUVEAU_GEM_AS_ALLOC       0x53
 #define DRM_NOUVEAU_GEM_AS_FREE        0x54
+#define DRM_NOUVEAU_GEM_SET_ERROR_NOTIFIER 0x55
 
 #endif /* __NOUVEAU_DRM_H__ */
