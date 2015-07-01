@@ -19,7 +19,7 @@ static int set_crtc_mode(struct sp_dev *dev, struct sp_crtc *crtc,
 
 	memset(&create_blob, 0, sizeof(create_blob));
 	create_blob.length = sizeof(struct drm_mode_modeinfo);
-	create_blob.data = (__u64)mode;
+	create_blob.data = (__u64)(uintptr_t)mode;
 
 	ret = drmIoctl(dev->fd, DRM_IOCTL_MODE_CREATEPROPBLOB, &create_blob);
 	if (ret) {
