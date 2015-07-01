@@ -21,39 +21,36 @@
 # IN THE SOFTWARE.
 #
 
+ifeq ($(strip $(BOARD_USES_LIBDRM)),true)
+
 LOCAL_PATH := $(call my-dir)
+include $(CLEAR_VARS)
+
 LIBDRM_TOP := $(LOCAL_PATH)
 
 # Import variables LIBDRM_{,H_,INCLUDE_H_,INCLUDE_VMWGFX_H_}FILES
 include $(LOCAL_PATH)/Makefile.sources
 
-common_CFLAGS := -DHAVE_LIBDRM_ATOMIC_PRIMITIVES=1
-
-# Static library for the device (recovery)
-include $(CLEAR_VARS)
-LOCAL_MODULE_TAGS := optional
-LOCAL_SRC_FILES := $(LIBDRM_FILES)
-LOCAL_EXPORT_C_INCLUDE_DIRS += $(LOCAL_PATH) $(LOCAL_PATH)/include/drm
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/include/drm
-LOCAL_CFLAGS := $(common_CFLAGS)
 LOCAL_MODULE := libdrm
-include $(BUILD_STATIC_LIBRARY)
-
-# Dynamic library for the device
-include $(CLEAR_VARS)
 LOCAL_MODULE_TAGS := optional
+
 LOCAL_SRC_FILES := $(LIBDRM_FILES)
-LOCAL_EXPORT_C_INCLUDE_DIRS += $(LOCAL_PATH) $(LOCAL_PATH)/include/drm
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/include/drm
-LOCAL_CFLAGS := $(common_CFLAGS)
+LOCAL_EXPORT_C_INCLUDE_DIRS += \
+	$(LOCAL_PATH) \
+	$(LOCAL_PATH)/include/drm
+
+LOCAL_C_INCLUDES := \
+	$(LIBDRM_TOP)/include/drm
+
+LOCAL_CFLAGS := \
+	-DHAVE_LIBDRM_ATOMIC_PRIMITIVES=1
 
 LOCAL_COPY_HEADERS := \
 	$(LIBDRM_H_FILES) \
 	$(LIBDRM_INCLUDE_H_FILES) \
 	$(LIBDRM_INCLUDE_VMWGFX_H_FILES)
-LOCAL_COPY_HEADERS_TO := libdrm
 
-LOCAL_MODULE := libdrm
+LOCAL_COPY_HEADERS_TO := libdrm
 include $(BUILD_SHARED_LIBRARY)
 
 SUBDIRS := \
@@ -67,3 +64,5 @@ SUBDIRS := \
 
 mkfiles := $(patsubst %,$(LIBDRM_TOP)/%/Android.mk,$(SUBDIRS))
 include $(mkfiles)
+
+endif
