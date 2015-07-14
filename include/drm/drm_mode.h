@@ -173,6 +173,19 @@ extern "C" {
 		DRM_MODE_REFLECT_X | \
 		DRM_MODE_REFLECT_Y)
 
+
+/*
+ * Legacy definitions for old code that doesn't use
+ * the above mask definitions. Don't use in future code.
+ */
+/* rotation property bits */
+#define DRM_ROTATE_0   0
+#define DRM_ROTATE_90  1
+#define DRM_ROTATE_180 2
+#define DRM_ROTATE_270 3
+#define DRM_REFLECT_X  4
+#define DRM_REFLECT_Y  5
+
 /* Content Protection Flags */
 #define DRM_MODE_CONTENT_PROTECTION_UNDESIRED	0
 #define DRM_MODE_CONTENT_PROTECTION_DESIRED     1
