@@ -113,6 +113,12 @@ struct drm_nouveau_gem_info {
 	uint32_t tile_flags;
 };
 
+struct drm_nouveau_gem_set_tiling {
+	uint32_t handle;
+	uint32_t tile_mode;
+	uint32_t tile_flags;
+};
+
 struct drm_nouveau_gem_new {
 	struct drm_nouveau_gem_info info;
 	uint32_t channel_hint;
