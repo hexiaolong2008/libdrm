@@ -205,6 +205,18 @@ struct drm_nouveau_gem_cpu_fini {
 	uint32_t handle;
 };
 
+struct drm_nouveau_gem_as_alloc {
+	uint64_t pages;     /* in, page length */
+	uint32_t page_size; /* in, byte page size */
+	uint32_t pad;
+	uint64_t align; /* in, requested alignment in bytes */
+	uint64_t address; /* in/out, non-zero for fixed address allocation */
+};
+
+struct drm_nouveau_gem_as_free {
+	uint64_t address;   /* in, byte address */
+};
+
 enum nouveau_bus_type {
 	NV_AGP     = 0,
 	NV_PCI     = 1,
@@ -231,5 +243,7 @@ struct drm_nouveau_sarea {
 #define DRM_NOUVEAU_GEM_SET_TILING     0x50
 #define DRM_NOUVEAU_GEM_PUSHBUF_2      0x51
 #define DRM_NOUVEAU_GEM_SET_INFO       0x52
+#define DRM_NOUVEAU_GEM_AS_ALLOC       0x53
+#define DRM_NOUVEAU_GEM_AS_FREE        0x54
 
 #endif /* __NOUVEAU_DRM_H__ */
