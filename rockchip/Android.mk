@@ -18,9 +18,6 @@ LOCAL_C_INCLUDES := \
 LOCAL_CFLAGS := \
 	-DHAVE_LIBDRM_ATOMIC_PRIMITIVES=1
 
-LOCAL_COPY_HEADERS := rockchip_drm.h rockchip_drmif.h
-LOCAL_COPY_HEADERS_TO := libdrm
-
 LOCAL_SHARED_LIBRARIES := \
 	libdrm
 
