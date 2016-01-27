@@ -46,6 +46,8 @@ ifneq ($(filter $(radeon_drivers), $(DRM_GPU_DRIVERS)),)
 LOCAL_SRC_FILES += $(LIBKMS_RADEON_FILES)
 endif
 
+LOCAL_SRC_FILES := $(filter-out %.h,$(LOCAL_SRC_FILES))
+
 LOCAL_MODULE := libkms
 LOCAL_SHARED_LIBRARIES := libdrm
 

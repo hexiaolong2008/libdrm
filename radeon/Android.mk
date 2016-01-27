@@ -5,18 +5,10 @@ include $(CLEAR_VARS)
 include $(LOCAL_PATH)/Makefile.sources
 
 LOCAL_MODULE := libdrm_radeon
-LOCAL_MODULE_TAGS := optional
 
 LOCAL_SHARED_LIBRARIES := libdrm
 
-LOCAL_SRC_FILES := $(LIBDRM_RADEON_FILES)
-LOCAL_EXPORT_C_INCLUDE_DIRS += \
-	$(LOCAL_PATH)/radeon
-
-LOCAL_C_INCLUDES := \
-	$(LIBDRM_TOP) \
-	$(LIBDRM_TOP)/radeon \
-	$(LIBDRM_TOP)/include/drm
+LOCAL_SRC_FILES := $(filter-out %.h,$(LIBDRM_RADEON_FILES))
 
 LOCAL_CFLAGS := \
 	-DHAVE_LIBDRM_ATOMIC_PRIMITIVES=1
