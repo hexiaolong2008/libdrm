@@ -25,10 +25,8 @@
 
 #if defined(HAVE_VISIBILITY)
 #  define drm_private __attribute__((visibility("hidden")))
-#  define drm_public __attribute__((visibility("default")))
 #else
 #  define drm_private
-#  define drm_public
 #endif
 
 
@@ -45,7 +43,7 @@
 
 #include <sys/mman.h>
 
-#if defined(ANDROID)
+#if defined(ANDROID) && !defined(__LP64__)
 #include <errno.h> /* for EINVAL */
 
 static inline void *drm_mmap(void *addr, size_t length, int prot, int flags,

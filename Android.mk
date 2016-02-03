@@ -26,35 +26,44 @@ LOCAL_PATH := $(call my-dir)
 # Import variables LIBDRM_{,H_,INCLUDE_H_,INCLUDE_VMWGFX_H_}FILES
 include $(LOCAL_PATH)/Makefile.sources
 
-common_CFLAGS := -DHAVE_LIBDRM_ATOMIC_PRIMITIVES=1
+common_CFLAGS := \
+	-DHAVE_VISIBILITY=1 \
+	-DHAVE_LIBDRM_ATOMIC_PRIMITIVES=1
 
 # Static library for the device (recovery)
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(filter-out %.h,$(LIBDRM_FILES))
-LOCAL_EXPORT_C_INCLUDE_DIRS += $(LOCAL_PATH) $(LOCAL_PATH)/include/drm
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/include/drm
-LOCAL_CFLAGS := $(common_CFLAGS)
+
 LOCAL_MODULE := libdrm
+
+LOCAL_SRC_FILES := $(filter-out %.h,$(LIBDRM_FILES))
+LOCAL_EXPORT_C_INCLUDE_DIRS := \
+	$(LOCAL_PATH) \
+	$(LOCAL_PATH)/include/drm
+
+LOCAL_C_INCLUDES := \
+	$(LOCAL_PATH)/include/drm
+
+LOCAL_CFLAGS := \
+	$(common_CFLAGS)
+
 include $(BUILD_STATIC_LIBRARY)
 
 # Dynamic library for the device
 include $(CLEAR_VARS)
-LOCAL_SRC_FILES := $(filter-out %.h,$(LIBDRM_FILES))
-LOCAL_EXPORT_C_INCLUDE_DIRS += $(LOCAL_PATH) $(LOCAL_PATH)/include/drm
-LOCAL_C_INCLUDES := $(LOCAL_PATH)/include/drm
-LOCAL_CFLAGS := $(common_CFLAGS)
 
 LOCAL_MODULE := libdrm
+
+LOCAL_SRC_FILES := $(filter-out %.h,$(LIBDRM_FILES))
+LOCAL_EXPORT_C_INCLUDE_DIRS := \
+	$(LOCAL_PATH) \
+	$(LOCAL_PATH)/include/drm
+
+LOCAL_C_INCLUDES := \
+	$(LOCAL_PATH)/include/drm
+
+LOCAL_CFLAGS := \
+	$(common_CFLAGS)
+
 include $(BUILD_SHARED_LIBRARY)
 
-SUBDIRS := \
-	nouveau \
-	radeon \
-	rockchip \
-	tegra \
-	libkms \
-	tests/modetest \
-	tests/planetest
-
-mkfiles := $(patsubst %,$(LOCAL_PATH)/%/Android.mk,$(SUBDIRS))
-include $(mkfiles)
+include $(call all-makefiles-under,$(LOCAL_PATH))

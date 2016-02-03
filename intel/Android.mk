@@ -29,8 +29,6 @@ include $(LOCAL_PATH)/Makefile.sources
 
 LOCAL_MODULE := libdrm_intel
 
-LOCAL_SHARED_LIBRARIES := libdrm
-
 LOCAL_SRC_FILES := $(filter-out %.h,$(LIBDRM_INTEL_FILES))
 
 LOCAL_C_INCLUDES := \
