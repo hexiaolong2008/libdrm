@@ -26,7 +26,14 @@ LOCAL_PATH := $(call my-dir)
 # Import variables LIBDRM_{,H_,INCLUDE_H_,INCLUDE_VMWGFX_H_}FILES
 include $(LOCAL_PATH)/Makefile.sources
 
-common_CFLAGS := -DHAVE_LIBDRM_ATOMIC_PRIMITIVES=1
+common_CFLAGS := \
+    -DHAVE_LIBDRM_ATOMIC_PRIMITIVES=1 \
+    -Wno-enum-conversion \
+    -Wno-missing-field-initializers \
+    -Wno-pointer-arith \
+    -Wno-sign-compare \
+    -Wno-tautological-compare \
+    -Wno-unused-parameter
 
 # Static library for the device (recovery)
 include $(CLEAR_VARS)
