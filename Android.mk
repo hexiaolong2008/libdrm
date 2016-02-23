@@ -28,7 +28,13 @@ include $(LOCAL_PATH)/Makefile.sources
 
 common_CFLAGS := \
 	-DHAVE_VISIBILITY=1 \
-	-DHAVE_LIBDRM_ATOMIC_PRIMITIVES=1
+	-DHAVE_LIBDRM_ATOMIC_PRIMITIVES=1 \
+	-Wno-enum-conversion \
+	-Wno-missing-field-initializers \
+	-Wno-pointer-arith \
+	-Wno-sign-compare \
+	-Wno-tautological-compare \
+	-Wno-unused-parameter
 
 # Static library for the device (recovery)
 include $(CLEAR_VARS)
