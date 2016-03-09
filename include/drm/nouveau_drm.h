@@ -244,6 +244,24 @@ struct drm_nouveau_gem_set_error_notifier {
 	uint32_t offset; /* in bytes, u32-aligned */
 };
 
+struct drm_nouveau_gem_map {
+	uint32_t handle;
+	uint32_t domain;
+	uint64_t offset;
+	uint64_t delta;
+	uint64_t length;
+	uint32_t tile_mode;
+	uint32_t tile_flags;
+};
+
+struct drm_nouveau_gem_unmap {
+	uint32_t handle;
+	uint32_t pad;
+	uint64_t offset;
+	uint64_t delta;
+	uint64_t length;
+};
+
 #define DRM_NOUVEAU_GETPARAM           0x00
 #define DRM_NOUVEAU_SETPARAM           0x01
 #define DRM_NOUVEAU_CHANNEL_ALLOC      0x02
@@ -265,5 +283,7 @@ struct drm_nouveau_gem_set_error_notifier {
 #define DRM_NOUVEAU_GEM_AS_ALLOC       0x53
 #define DRM_NOUVEAU_GEM_AS_FREE        0x54
 #define DRM_NOUVEAU_GEM_SET_ERROR_NOTIFIER 0x55
+#define DRM_NOUVEAU_GEM_MAP            0x56
+#define DRM_NOUVEAU_GEM_UNMAP          0x57
 
 #endif /* __NOUVEAU_DRM_H__ */
