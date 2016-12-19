@@ -21,6 +21,7 @@
 # IN THE SOFTWARE.
 #
 
+ifneq ($(TARGET_USE_PRIVATE_LIBDRM),true)
 LOCAL_PATH := $(call my-dir)
 
 # Import variables LIBDRM_{,H_,INCLUDE_H_,INCLUDE_VMWGFX_H_}FILES
@@ -73,3 +74,4 @@ LOCAL_CFLAGS := \
 include $(BUILD_SHARED_LIBRARY)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
+endif
