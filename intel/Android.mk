@@ -29,11 +29,10 @@ include $(LOCAL_PATH)/Makefile.sources
 
 LOCAL_MODULE := libdrm_intel
 
+# Removed dependency to libpciaccess: not used on Android
 LOCAL_SHARED_LIBRARIES := libdrm
 
-LOCAL_SRC_FILES := $(filter-out %.h,$(LIBDRM_INTEL_FILES))
+LOCAL_SRC_FILES := $(LIBDRM_INTEL_FILES)
 
-LOCAL_CFLAGS := \
-	-DHAVE_LIBDRM_ATOMIC_PRIMITIVES=1
-
+include $(LIBDRM_COMMON_MK)
 include $(BUILD_SHARED_LIBRARY)
