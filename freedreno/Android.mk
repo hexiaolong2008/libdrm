@@ -5,7 +5,7 @@ include $(CLEAR_VARS)
 include $(LOCAL_PATH)/Makefile.sources
 
 LOCAL_MODULE := libdrm_freedreno
-
+LOCAL_VENDOR_MODULE := true
 LOCAL_SHARED_LIBRARIES := libdrm
 
 LOCAL_SRC_FILES := $(LIBDRM_FREEDRENO_FILES)
