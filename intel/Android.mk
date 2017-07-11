@@ -28,6 +28,7 @@ include $(CLEAR_VARS)
 include $(LOCAL_PATH)/Makefile.sources
 
 LOCAL_MODULE := libdrm_intel
+LOCAL_VENDOR_MODULE := true
 
 # Removed dependency to libpciaccess: not used on Android
 LOCAL_SHARED_LIBRARIES := libdrm
