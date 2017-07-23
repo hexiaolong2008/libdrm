@@ -21,8 +21,9 @@
 # IN THE SOFTWARE.
 #
 
-
-ifneq ($(TARGET_USE_PRIVATE_LIBDRM),true)
+# Two identical libs are defined here.
+# libdrm: for vendors. installed to /vendor/lib. libdrm_<vendor> uses this.
+# libdrm_platform: for platform modules (such as libminui). installed to /system/lib
 
 LIBDRM_COMMON_MK := $(call my-dir)/Android.common.mk
 
@@ -40,7 +41,58 @@ common_CFLAGS := \
 # Static library for the device (recovery)
 include $(CLEAR_VARS)
 
+LOCAL_MODULE := libdrm_platform
+
+LOCAL_SRC_FILES := $(filter-out %.h,$(LIBDRM_FILES))
+LOCAL_EXPORT_C_INCLUDE_DIRS := \
+	$(LOCAL_PATH) \
+	$(LOCAL_PATH)/include/drm
+
+LOCAL_C_INCLUDES := \
+	$(LOCAL_PATH)/include/drm
+
+LOCAL_CFLAGS := \
+	$(common_CFLAGS)
+
+include $(LIBDRM_COMMON_MK)
+include $(BUILD_STATIC_LIBRARY)
+
+# Dynamic library for the device
+include $(CLEAR_VARS)
+
+LOCAL_MODULE := libdrm_platform
+
+LOCAL_SRC_FILES := $(filter-out %.h,$(LIBDRM_FILES))
+LOCAL_EXPORT_C_INCLUDE_DIRS := \
+	$(LOCAL_PATH) \
+	$(LOCAL_PATH)/include/drm
+
+LOCAL_C_INCLUDES := \
+	$(LOCAL_PATH)/include/drm
+
+LOCAL_CFLAGS := \
+	$(common_CFLAGS)
+
+include $(LIBDRM_COMMON_MK)
+include $(BUILD_SHARED_LIBRARY)
+
+
+ifneq ($(TARGET_USE_PRIVATE_LIBDRM),true)
+
+# Import variables LIBDRM_{,H_,INCLUDE_H_,INCLUDE_VMWGFX_H_}FILES
+include $(LOCAL_PATH)/Makefile.sources
+
+common_CFLAGS := \
+	-Wno-enum-conversion \
+	-Wno-pointer-arith \
+	-Wno-sign-compare \
+	-Wno-tautological-compare
+
+# Static library for the device (recovery)
+include $(CLEAR_VARS)
+
 LOCAL_MODULE := libdrm
+LOCAL_VENDOR_MODULE := true
 
 LOCAL_SRC_FILES := $(filter-out %.h,$(LIBDRM_FILES))
 LOCAL_EXPORT_C_INCLUDE_DIRS := \
@@ -77,4 +129,4 @@ include $(LIBDRM_COMMON_MK)
 include $(BUILD_SHARED_LIBRARY)
 
 include $(call all-makefiles-under,$(LOCAL_PATH))
-endif
+endif # if TARGET_USE_PRIVATE_LIBDRM is not true

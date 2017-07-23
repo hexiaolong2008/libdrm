@@ -5,6 +5,7 @@ include $(CLEAR_VARS)
 include $(LOCAL_PATH)/Makefile.sources
 
 LOCAL_MODULE := libdrm_etnaviv
+LOCAL_VENDOR_MODULE := true
 
 LOCAL_SHARED_LIBRARIES := libdrm
 
