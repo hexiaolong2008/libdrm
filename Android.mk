@@ -33,6 +33,7 @@ LOCAL_PATH := $(call my-dir)
 include $(LOCAL_PATH)/Makefile.sources
 
 common_CFLAGS := \
+	-Wall -Werror \
 	-Wno-enum-conversion \
 	-Wno-pointer-arith \
 	-Wno-sign-compare \

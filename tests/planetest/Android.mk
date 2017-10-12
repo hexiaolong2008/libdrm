@@ -3,6 +3,8 @@ LOCAL_PATH := $(call my-dir)
 include $(CLEAR_VARS)
 include $(LOCAL_PATH)/Makefile.sources
 
+LOCAL_CFLAGS := -Wall -Werror -Wno-unused-parameter -Wno-pointer-arith
+
 LOCAL_SRC_FILES := $(filter-out %.h,$(PLANETEST_COMMON_FILES) $(PLANETEST_FILES))
 
 LOCAL_MODULE := planetest
@@ -13,6 +15,8 @@ include $(BUILD_EXECUTABLE)
 
 include $(CLEAR_VARS)
 include $(LOCAL_PATH)/Makefile.sources
+
+LOCAL_CFLAGS := -Wall -Werror -Wno-unused-parameter -Wno-pointer-arith
 
 LOCAL_SRC_FILES := $(filter-out %.h,$(PLANETEST_COMMON_FILES) $(ATOMICTEST_FILES))
 
