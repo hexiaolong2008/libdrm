@@ -7,7 +7,7 @@ LOCAL_SRC_FILES := $(filter-out %.h,$(MODETEST_FILES))
 
 LOCAL_MODULE := modetest
 
-LOCAL_SHARED_LIBRARIES := libdrm
+LOCAL_SHARED_LIBRARIES := libdrm_platform
 LOCAL_STATIC_LIBRARIES := libdrm_util
 
 LOCAL_C_INCLUDES := $(LOCAL_PATH)/..

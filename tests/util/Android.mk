@@ -28,7 +28,7 @@ include $(LOCAL_PATH)/Makefile.sources
 
 LOCAL_MODULE := libdrm_util
 
-LOCAL_SHARED_LIBRARIES := libdrm
+LOCAL_SHARED_LIBRARIES := libdrm_platform
 
 LOCAL_SRC_FILES := $(UTIL_FILES)
 
