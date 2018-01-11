@@ -34,6 +34,7 @@ cc_defaults {
 
         "-Wall",
         "-Werror",
+        "-Wno-deprecated-declarations",
         "-Wno-format",
         "-Wno-gnu-variable-sized-type-not-at-end",
         "-Wno-pointer-arith",
