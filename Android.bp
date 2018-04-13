@@ -54,7 +54,7 @@ cc_library {
         "libdrm_sources",
     ],
 
-    export_include_dirs: ["include/drm"],
+    export_include_dirs: ["include/drm", "android"],
 
     cflags: [
         "-Wno-enum-conversion",
