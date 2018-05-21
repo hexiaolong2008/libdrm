@@ -34,6 +34,7 @@ cc_defaults {
 
         "-Wall",
         "-Werror",
+        "-Wno-deprecated-declarations",
         "-Wno-format",
         "-Wno-gnu-variable-sized-type-not-at-end",
         "-Wno-pointer-arith",
@@ -53,7 +54,7 @@ cc_library {
         "libdrm_sources",
     ],
 
-    export_include_dirs: ["include/drm"],
+    export_include_dirs: ["include/drm", "android"],
 
     cflags: [
         "-Wno-enum-conversion",
